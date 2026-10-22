@@ -53,3 +53,5 @@
 #chat-view .chat-window{max-width:760px;min-height:450px;max-height:none;margin:0 auto}
 #chat-view .chat-messages{flex:1;max-height:clamp(230px,45vh,520px)}
 @media(max-width:650px){#chat-view .chat-window{min-height:360px;padding:14px}#chat-view .chat-messages{max-height:42dvh}}
+.mobile-brand{display:none}
+@media(max-width:650px){.desktop-crumb{display:none}.mobile-brand{display:flex;align-items:center;gap:7px;color:var(--ink);text-decoration:none;font-size:12px;font-weight:800;white-space:nowrap}.mobile-brand img{width:25px;height:25px;object-fit:contain;border-radius:7px}}
