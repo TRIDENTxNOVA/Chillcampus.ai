@@ -1,0 +1,12 @@
+{
+  "name": "Chill Campus.ai — Student Companion",
+  "short_name": "Chill Campus",
+  "description": "A gentle, personal syllabus and study planner.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f6f7f3",
+  "theme_color": "#f5f6f2",
+  "icons": [
+    { "src": "logo.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

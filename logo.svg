@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
+  <title id="title">Chill Campus.ai logo</title>
+  <defs>
+    <linearGradient id="bg" x1="8" y1="6" x2="58" y2="61" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#8768F5"/><stop offset=".55" stop-color="#645BEA"/><stop offset="1" stop-color="#28C5BD"/>
+    </linearGradient>
+    <linearGradient id="glow" x1="18" y1="17" x2="48" y2="49" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#fff"/><stop offset="1" stop-color="#D8FFF2"/>
+    </linearGradient>
+  </defs>
+  <rect x="2" y="2" width="60" height="60" rx="20" fill="#19172E"/>
+  <rect x="5" y="5" width="54" height="54" rx="17" fill="url(#bg)"/>
+  <circle cx="31" cy="32" r="17" fill="#211E48" fill-opacity=".24"/>
+  <path d="M38.6 23.8a12.2 12.2 0 1 0 0 16.4" fill="none" stroke="url(#glow)" stroke-linecap="round" stroke-width="5.2"/>
+  <path d="M47 13.2l1.8 4.7 4.7 1.8-4.7 1.8-1.8 4.7-1.8-4.7-4.7-1.8 4.7-1.8 1.8-4.7Z" fill="#D7FFF2"/>
+  <circle cx="17.2" cy="45.8" r="2" fill="#C7B9FF"/>
+</svg>
