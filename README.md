@@ -25,7 +25,7 @@ Open this folder in Visual Studio Code and use the free **Live Server** extensio
 
 ## What is and is not connected
 
-**Works in this preview:** local syllabus management and topic status, YouTube search suggestions by topic, personal links, a deterministic planner, quiz explanations, flashcards, a focus timer, local community posts, progress points, and browser-local saving. The navigation groups related tools into Study, Practice, and More hubs, with a compact labeled phone menu.
+**Works in this preview:** local syllabus management and topic status, YouTube search suggestions by topic, personal links, a deterministic planner, quiz explanations, flashcards, a focus timer, local community posts, progress points, a rule-based Study AI chat preview, and browser-local saving. The navigation groups related tools into Study, Practice, and More hubs, with a compact labeled phone menu. The chat preview does not send questions to an AI provider.
 
 **Needs a secure backend or external setup:** real sign-up/sign-in, college student verification, a verified Indian institution directory, shared college data, uploads and PDF parsing, cross-device sync, YouTube API recommendations, AI answers, and a real college/batch leaderboard. The interface labels these boundaries and does not pretend those services are active.
 

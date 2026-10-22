@@ -30,3 +30,23 @@
   .top-actions .icon-button{width:29px;height:29px}
   .hub-panel .view-heading{flex-wrap:wrap}
 }
+.study-chat-dialog{width:min(440px,calc(100% - 24px));max-height:min(700px,calc(100dvh - 28px));border:1px solid var(--line);border-radius:16px;padding:0;background:#fbfcf9;color:var(--ink);box-shadow:0 22px 80px #20291f38;overflow:hidden}
+.study-chat-dialog::backdrop{background:#1e261d70;backdrop-filter:blur(2px)}
+.chat-window{display:flex;flex-direction:column;max-height:min(700px,calc(100dvh - 28px));padding:18px}
+.chat-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding-bottom:13px;border-bottom:1px solid var(--line)}
+.chat-header .eyebrow{font-size:8px;margin:0 0 5px}
+.chat-header h2{font:700 19px Manrope,sans-serif;margin:0}
+.chat-close{border:1px solid var(--line);border-radius:8px;background:#fff;color:#596451;width:30px;height:30px;font-size:20px;line-height:1;cursor:pointer}
+.chat-disclaimer{margin:12px 0;padding:9px 10px;border-radius:8px;background:#eef3e8;color:#566b4e;font-size:9px;line-height:1.5}
+.chat-messages{min-height:180px;max-height:42vh;overflow:auto;display:flex;flex-direction:column;gap:10px;padding:6px 1px 12px}
+.chat-message{max-width:90%;padding:10px 12px;border:1px solid var(--line);border-radius:11px;background:#fff;font-size:10px;line-height:1.6;overflow-wrap:anywhere}
+.chat-message p{margin:4px 0 0;color:#656d62}
+.chat-message.user{align-self:flex-end;background:#e9efdf;border-color:#e0e8d6}
+.chat-suggestions{display:flex;gap:7px;overflow-x:auto;padding:5px 0 11px}
+.chat-suggestions button{flex:none;border:1px solid #dfe6d7;border-radius:18px;padding:7px 10px;background:#fff;color:#586b50;font-size:9px;cursor:pointer}
+.chat-form{display:flex;align-items:flex-end;gap:8px;border:1px solid #dfe3da;background:#fff;border-radius:10px;padding:7px}
+.chat-form textarea{width:100%;min-height:38px;max-height:110px;resize:vertical;border:0;outline:0;padding:5px;font:10px/1.5 'DM Sans',sans-serif;color:var(--ink)}
+.chat-form .primary{padding:9px 12px;white-space:nowrap}
+.chat-footnote{font-size:8px;line-height:1.5;margin:10px 2px 0}
+.visually-hidden{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+@media(max-width:650px){.study-chat-dialog{width:calc(100% - 16px);max-height:calc(100dvh - 16px);border-radius:14px}.chat-window{max-height:calc(100dvh - 16px);padding:14px}.chat-messages{max-height:40dvh}.chat-suggestions button{font-size:8px}}
