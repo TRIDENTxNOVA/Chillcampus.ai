@@ -83,7 +83,7 @@ begin
   insert into public.ai_request_windows(user_id, window_started_at, request_count)
   values (p_user_id, v_window, 1)
   on conflict (user_id, window_started_at)
-  do update set request_count = public.ai_request_windows.request_count + 1
+  do update set request_count = least(public.ai_request_windows.request_count + 1, p_max_requests + 1)
   returning request_count into v_count;
   return v_count <= p_max_requests;
 end;
