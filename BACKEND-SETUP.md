@@ -29,3 +29,11 @@ The AI function accepts only chat, quiz, flashcard, and plan tasks; requires a v
 ## Owner setup still required
 
 The project owner must create the Supabase project, configure email authentication and redirect URLs, provide the OpenAI API key in Supabase Edge Function secrets, and publish/deploy the backend. The repository does not contain credentials and cannot activate a hosted service until those account-side steps are completed.
+
+## Reliability and launch checks
+
+Before inviting learners, set a monthly spending limit and alert in the OpenAI project; per-account request limits do not cap total project spend. Configure Supabase backups/exports for the selected plan and test restoring one. Review function and database logs without recording prompts or secrets.
+
+The first sync version saves each learner's app state as one JSON document. It is appropriate for an initial release, but simultaneous edits from two devices can overwrite one another. Until conflict-aware syncing is added, avoid editing the same learner account on multiple devices at once.
+
+After deployment, manually verify sign-up, email confirmation, sign-in, password reset, sync on a second device, owner-only file access, file size/type rejection, AI chat follow-up, AI quiz grading, flashcard generation, plan creation, backend outage behavior, and a mobile viewport. Check the browser source and network requests to confirm no AI or service-role key is sent to the browser.
