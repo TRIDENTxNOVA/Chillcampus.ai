@@ -1,0 +1,5 @@
+# Local development credentials
+supabase/.env
+supabase/functions/.env
+.env
+.env.local
