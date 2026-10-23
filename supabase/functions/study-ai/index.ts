@@ -28,6 +28,9 @@ function corsOrigin(request: Request) {
 
 Deno.serve(async (request) => {
   const origin = corsOrigin(request);
+  const configuredOrigin = Deno.env.get("APP_ORIGIN") ?? "";
+  const incomingOrigin = request.headers.get("origin") ?? "";
+  if (incomingOrigin && incomingOrigin !== configuredOrigin) return json(403, { error: "origin_not_allowed" }, origin);
   if (request.method === "OPTIONS") return new Response(null, {
     status: 204,
     headers: {
@@ -41,8 +44,29 @@ Deno.serve(async (request) => {
 
   const declaredLength = Number(request.headers.get("content-length") ?? "0");
   if (declaredLength > maxBodyBytes) return json(413, { error: "request_too_large" }, origin);
-  const raw = await request.text();
-  if (encoder.encode(raw).byteLength > maxBodyBytes) return json(413, { error: "request_too_large" }, origin);
+  let raw = "";
+  const reader = request.body?.getReader();
+  if (!reader) return json(400, { error: "invalid_request" }, origin);
+  const chunks: Uint8Array[] = [];
+  let totalBytes = 0;
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      totalBytes += value.byteLength;
+      if (totalBytes > maxBodyBytes) {
+        await reader.cancel();
+        return json(413, { error: "request_too_large" }, origin);
+      }
+      chunks.push(value);
+    }
+    const body = new Uint8Array(totalBytes);
+    let offset = 0;
+    for (const chunk of chunks) { body.set(chunk, offset); offset += chunk.byteLength; }
+    raw = new TextDecoder().decode(body);
+  } catch {
+    return json(400, { error: "invalid_request" }, origin);
+  }
 
   let payload: Record<string, unknown>;
   try {
@@ -76,13 +100,20 @@ Deno.serve(async (request) => {
   const admin = createClient(supabaseUrl, serviceKey, {
     auth: { persistSession: false, autoRefreshToken: false },
   });
-  const { data: allowed, error: limitError } = await admin.rpc("consume_ai_request", {
+  const { data: minuteAllowed, error: minuteError } = await admin.rpc("consume_ai_request", {
     p_user_id: userResult.user.id,
     p_window_seconds: 60,
     p_max_requests: 12,
   });
-  if (limitError) return json(503, { error: "service_unavailable" }, origin);
-  if (!allowed) return json(429, { error: "rate_limited" }, origin);
+  if (minuteError) return json(503, { error: "service_unavailable" }, origin);
+  if (!minuteAllowed) return json(429, { error: "rate_limited" }, origin);
+  const { data: dailyAllowed, error: dailyError } = await admin.rpc("consume_ai_request", {
+    p_user_id: userResult.user.id,
+    p_window_seconds: 86_400,
+    p_max_requests: 120,
+  });
+  if (dailyError) return json(503, { error: "service_unavailable" }, origin);
+  if (!minuteAllowed || !dailyAllowed) return json(429, { error: "rate_limited" }, origin);
 
   let context = payload.context && typeof payload.context === "object" ? payload.context : {};
   let contextText = JSON.stringify(context);
@@ -97,9 +128,9 @@ Deno.serve(async (request) => {
 
   const taskInstructions: Record<string, string> = {
     chat: "Answer as a friendly study coach. Explain simply, use an example, and end with one quick check when useful. Do not claim to browse or cite sources you did not use.",
-    quiz: "Create 5 fresh questions for the requested topic. Return a concise numbered quiz with answers and short explanations after the questions. Vary question style and difficulty.",
-    flashcards: "Create 8 useful flashcards for the requested topic. Return Question, Answer, and Short explanation for each card.",
-    plan: "Create a realistic study plan from the provided exam and study constraints. Include date/day, topic, duration, learning, practice, revision, and catch-up time. Prioritize low-confidence topics.",
+    quiz: "Create five varied multiple-choice questions for the requested topic. Return only valid JSON shaped as {"questions":[{"question":"...","options":["...","..."],"answerIndex":0,"explanation":"...","difficulty":"Easy"}]}. Include 3 or 4 options per question and vary difficulty. Vary question style and difficulty.",
+    flashcards: "Create eight useful flashcards for the requested topic. Return only valid JSON shaped as {"cards":[{"question":"...","answer":"...","explanation":"..."}]}.",
+    plan: "Create a realistic study plan from the provided exam and study constraints. Return only valid JSON shaped as {"tasks":[{"day":1,"topic":"...","minutes":20,"kind":"Learning","title":"..."}]}. Include date/day, topic, duration, learning, practice, revision, and catch-up time. Prioritize low-confidence topics.",
   };
   const system = [
     "You are Chill Campus.ai, a clear, encouraging student study coach. Teach rather than merely give answers.",
@@ -112,25 +143,26 @@ Deno.serve(async (request) => {
 
   const model = Deno.env.get("AI_MODEL") || "gpt-4o-mini";
   try {
-    const upstream = await fetch("https://api.openai.com/v1/chat/completions", {
+    const upstream = await fetch("https://api.openai.com/v1/responses", {
       method: "POST",
       headers: { authorization: "Bearer " + aiKey, "content-type": "application/json" },
       signal: AbortSignal.timeout(25_000),
       body: JSON.stringify({
         model,
-        temperature: type === "chat" ? 0.5 : 0.7,
-        max_tokens: type === "chat" ? 700 : 1_500,
-        messages: [
+        store: false,
+        max_output_tokens: type === "chat" ? 700 : 1_500,
+        input: [
           { role: "system", content: system },
           ...history,
           { role: "user", content: message },
         ],
+        text: type === "chat" ? { format: { type: "text" } } : { format: { type: "json_object" } },
       }),
     });
     if (upstream.status === 429) return json(503, { error: "temporarily_unavailable" }, origin);
     if (!upstream.ok) return json(503, { error: "temporarily_unavailable" }, origin);
     const result = await upstream.json();
-    const answer = result?.choices?.[0]?.message?.content;
+    const answer = result?.output_text ?? result?.output?.flatMap((item: { content?: Array<{ type?: string; text?: string }> }) => item.content ?? []).find((part: { type?: string }) => part.type === 'output_text')?.text;
     if (typeof answer !== "string" || !answer.trim()) return json(503, { error: "temporarily_unavailable" }, origin);
     return json(200, { answer: answer.trim(), type }, origin);
   } catch {
