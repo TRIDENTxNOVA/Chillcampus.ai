@@ -1,0 +1,25 @@
+name: Backend checks
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - codex/learner-appearance-modes
+      - codex/supabase-backend
+
+permissions:
+  contents: read
+
+jobs:
+  check-study-ai:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - name: Type-check Study AI function
+        run: deno check supabase/functions/study-ai/index.ts
