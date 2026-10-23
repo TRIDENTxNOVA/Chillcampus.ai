@@ -140,9 +140,9 @@ Deno.serve(async (request) => {
 
   const taskInstructions: Record<string, string> = {
     chat: "Answer as a friendly study coach. Explain simply, use an example, and end with one quick check when useful. Do not claim to browse or cite sources you did not use.",
-    quiz: "Create five varied multiple-choice questions for the requested topic. Return only valid JSON shaped as {"questions":[{"question":"...","options":["...","..."],"answerIndex":0,"explanation":"...","difficulty":"Easy"}]}. Include 3 or 4 options per question and vary difficulty. Vary question style and difficulty.",
-    flashcards: "Create eight useful flashcards for the requested topic. Return only valid JSON shaped as {"cards":[{"question":"...","answer":"...","explanation":"..."}]}.",
-    plan: "Create a realistic study plan from the provided exam and study constraints. Return only valid JSON shaped as {"tasks":[{"day":1,"topic":"...","minutes":20,"kind":"Learning","title":"..."}]}. Include date/day, topic, duration, learning, practice, revision, and catch-up time. Prioritize low-confidence topics.",
+    quiz: 'Create five varied multiple-choice questions for the requested topic. Return only valid JSON shaped as {"questions":[{"question":"...","options":["...","..."],"answerIndex":0,"explanation":"...","difficulty":"Easy"}]}. Include 3 or 4 options per question and vary difficulty. Vary question style and difficulty.',
+    flashcards: 'Create eight useful flashcards for the requested topic. Return only valid JSON shaped as {"cards":[{"question":"...","answer":"...","explanation":"..."}]}.',
+    plan: 'Create a realistic study plan from the provided exam and study constraints. Return only valid JSON shaped as {"tasks":[{"day":1,"topic":"...","minutes":20,"kind":"Learning","title":"..."}]}. Include date/day, topic, duration, learning, practice, revision, and catch-up time. Prioritize low-confidence topics.',
   };
   const system = [
     "You are Chill Campus.ai, a clear, encouraging student study coach. Teach rather than merely give answers.",
