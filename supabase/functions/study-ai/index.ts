@@ -20,6 +20,18 @@ function json(status: number, body: Record<string, unknown>, origin: string) {
   });
 }
 
+function supabaseKeyFromEnv(legacyName: string, bundleName: string): string | null {
+  const legacy = Deno.env.get(legacyName);
+  if (legacy) return legacy;
+  try {
+    const bundle = JSON.parse(Deno.env.get(bundleName) ?? "{}");
+    if (typeof bundle === "string") return bundle;
+    return Object.values(bundle).find((value): value is string => typeof value === "string") ?? null;
+  } catch {
+    return null;
+  }
+}
+
 function corsOrigin(request: Request) {
   const configured = Deno.env.get("APP_ORIGIN") ?? "";
   const incoming = request.headers.get("origin") ?? "";
@@ -85,8 +97,8 @@ Deno.serve(async (request) => {
   const authorization = request.headers.get("authorization") ?? "";
   if (!authorization.startsWith("Bearer ")) return json(401, { error: "sign_in_required" }, origin);
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
-  const anonKey = Deno.env.get("SUPABASE_ANON_KEY");
-  const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  const anonKey = supabaseKeyFromEnv("SUPABASE_ANON_KEY", "SUPABASE_PUBLISHABLE_KEYS");
+  const serviceKey = supabaseKeyFromEnv("SUPABASE_SERVICE_ROLE_KEY", "SUPABASE_SECRET_KEYS");
   const aiKey = Deno.env.get("OPENAI_API_KEY");
   if (!supabaseUrl || !anonKey || !serviceKey || !aiKey) return json(503, { error: "service_unavailable" }, origin);
 
