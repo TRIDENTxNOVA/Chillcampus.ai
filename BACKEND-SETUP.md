@@ -12,19 +12,19 @@ The website remains a static GitHub Pages frontend. Supabase provides hosted aut
 
 ## 2. Connect the static website
 
-Copy `backend-config.example.js` to `backend-config.js` and fill in only `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY`. Those client values are designed to be public; database and storage RLS policies are the access control. The AI key and Supabase service-role key must never be placed there.
+Edit `backend-config.js` and fill in only `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY`. Those client values are designed to be public; database and storage RLS policies are the access control. The AI key and Supabase service-role key must never be placed there.
 
 ## 3. Run and deploy
 
 Install the Supabase CLI, run `supabase login`, link the project with `supabase link --project-ref <project-ref>`, apply migrations with `supabase db push`, then deploy the function with `supabase functions deploy study-ai`. Set production secrets in the Supabase Dashboard or with `supabase secrets set`. Publish the website on GitHub Pages and set the matching auth redirect URLs and `APP_ORIGIN`.
 
-For local testing, run a local static server at the configured origin and use `supabase functions serve study-ai --env-file supabase/.env`. Never add real secrets to Git.
+For local testing, copy `supabase/.env.example` to `supabase/.env`, add the AI key, add `supabase/.env` to `.gitignore` (already included), run a local static server at the configured origin, then use `supabase functions serve study-ai --env-file supabase/.env`. Never add real secrets to Git.
 
 ## Data and privacy model
 
-The initial sync stores one JSON study-state document per authenticated learner. RLS permits each signed-in user to access only their own row. The upload bucket is private, has a 10 MiB file limit and an allowlist of PDF, text, PNG, and JPEG, and scopes object paths to the authenticated user's ID. Files are not sent to the AI function. Conversations are sent only with the current request and are not persisted by this backend.
+The initial sync stores one JSON study-state document per authenticated learner. RLS permits each signed-in user to access only their own row. The upload bucket is private, has a 10 MiB file limit and an allowlist of PDF, text, PNG, and JPEG, and scopes object paths to the authenticated user's ID. Files are not sent to the AI function. Chat history is held only in page memory for follow-up questions and sent with the current request; the app does not persist conversations. AI questions are processed by OpenAI, so review its current API data handling and include that processing in your privacy notice before launch.
 
-The AI function accepts only chat, quiz, flashcard, and plan tasks; requires a valid user session; enforces a 12-request-per-minute account limit; limits the request to 12 KiB; bounds context/history/tokens; and returns generic service errors without upstream details. Update `APP_ORIGIN` to the exact production origin before deployment.
+The AI function accepts only chat, quiz, flashcard, and plan tasks; requires a valid user session; enforces 12 requests per minute and 120 requests per day per account; limits the request to 12 KiB; bounds context/history/tokens; and returns generic service errors without upstream details. Update `APP_ORIGIN` to the exact production origin before deployment.
 
 ## Owner setup still required
 
