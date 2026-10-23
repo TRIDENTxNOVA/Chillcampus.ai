@@ -146,5 +146,21 @@ body[data-appearance="focus"] .week-dots{margin-top:auto;padding-top:20px}
 .appearance-status{margin:10px 1px 0;color:var(--leaf);font-size:8px;font-weight:700}
 @media(max-width:950px){body[data-appearance="focus"] .dashboard-grid{grid-template-columns:1fr;grid-template-areas:none}}
 @media(max-width:650px){.appearance-grid{grid-template-columns:1fr}.appearance-choice{grid-template-columns:104px 1fr;align-items:center;column-gap:10px}.appearance-swatch{grid-row:span 2}.appearance-name small{display:block;margin:3px 0 0}.appearance-description{align-self:start}body[data-appearance="focus"] .dashboard-grid{grid-template-columns:1fr;grid-template-areas:"focus" "queue"}body[data-appearance="focus"] .dashboard-grid>.weekly-panel{grid-area:focus}body[data-appearance="focus"] .dashboard-grid>section:not(.weekly-panel){grid-area:queue}}
-\n/* Minimal account states for the existing sign-in overlay. */\n.logged-out-card #auth-form{display:grid;gap:12px;text-align:left;margin:18px 0}.logged-out-card #auth-form[hidden]{display:none}.logged-out-card #auth-form label{display:grid;gap:6px;color:var(--muted);font-size:12px}.logged-out-card #auth-form input{width:100%;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--paper);color:var(--ink)}.auth-message{min-height:20px;color:var(--muted);font-size:12px}.logged-out-card #auth-mode-toggle{margin:8px auto}.logged-out-card #auth-reset{justify-self:center}.logged-out-card #auth-mode-toggle[hidden]{display:none}\n
+
+/* Minimal account states for the existing sign-in overlay. */
+.logged-out-card #auth-form{display:grid;gap:12px;text-align:left;margin:18px 0}.logged-out-card #auth-form[hidden]{display:none}.logged-out-card #auth-form label{display:grid;gap:6px;color:var(--muted);font-size:12px}.logged-out-card #auth-form input{width:100%;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--paper);color:var(--ink)}.auth-message{min-height:20px;color:var(--muted);font-size:12px}.logged-out-card #auth-mode-toggle{margin:8px auto}.logged-out-card #auth-reset{justify-self:center}.logged-out-card #auth-mode-toggle[hidden]{display:none}
+
 .resource-add-actions,.quiz-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.resource-add-actions{justify-content:flex-end}.quiz-actions{justify-content:flex-end}.flashcard-panel #ai-flashcards-button{margin:4px 0 10px}
+
+/* Keep sign-in text and inputs readable on mobile browsers that force dark controls. */
+.logged-out-screen,.logged-out-card{color-scheme:light}
+.logged-out-card{color:#252a24}
+.logged-out-card h1{color:#252a24}
+.logged-out-card .eyebrow{color:#587747}
+.logged-out-card>p:not(.eyebrow){color:#586253}
+.logged-out-card #auth-form label{color:#465141}
+.logged-out-card #auth-form input{background:#fff;color:#222a20;border-color:#bbc5b2;color-scheme:light}
+.logged-out-card #auth-form input:focus-visible{outline:2px solid #54764a;outline-offset:1px}
+.auth-message{color:#465141}
+.logged-out-card #auth-mode-toggle{color:#4f7043}
+@media(max-width:480px){.logged-out-screen{padding:14px}.logged-out-card{padding:24px 20px;max-height:calc(100vh - 28px);overflow-y:auto}.logged-out-card h1{font-size:clamp(22px,7vw,25px)}.logged-out-card #auth-submit{width:100%}.logged-out-card #auth-reset{justify-self:start}}
