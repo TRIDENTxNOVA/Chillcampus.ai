@@ -5,10 +5,10 @@ The website remains a static GitHub Pages frontend. Supabase provides hosted aut
 ## 1. Create and configure Supabase
 
 1. Create a Supabase project and copy its project URL and **publishable** key.
-2. In Authentication, enable email sign-in and confirm the allowed redirect URLs include the published GitHub Pages URL and your local development URL.
+2. In Authentication → URL Configuration, set Site URL to `https://tridentxnova.github.io/Chillcampus.ai/` and add `https://tridentxnova.github.io/Chillcampus.ai/**` to Redirect URLs. Add your exact local dev URL separately if needed.
 3. In the Supabase SQL editor (or with the CLI), apply `supabase/migrations/202610230001_backend_foundation.sql`.
 4. Deploy the `study-ai` Edge Function. The function requires JWT authentication.
-5. In Edge Function secrets, set `OPENAI_API_KEY`, `AI_MODEL` (for example `gpt-4o-mini`), and `APP_ORIGIN` to the exact site origin. Do not put these in GitHub Pages or frontend files.
+5. In Edge Function Secrets, set `OPENAI_API_KEY`, `AI_MODEL=gpt-4o-mini`, and `APP_ORIGIN=https://tridentxnova.github.io`. `APP_ORIGIN` is the origin only (no `/Chillcampus.ai/` path). Never put the OpenAI key in GitHub Pages or frontend files.
 
 ## 2. Connect the static website
 
@@ -16,7 +16,7 @@ Edit `backend-config.js` and fill in only `SUPABASE_URL` and `SUPABASE_PUBLISHAB
 
 ## 3. Run and deploy
 
-Install the Supabase CLI, run `supabase login`, link the project with `supabase link --project-ref <project-ref>`, apply migrations with `supabase db push`, then deploy the function with `supabase functions deploy study-ai`. Set production secrets in the Supabase Dashboard or with `supabase secrets set`. Publish the website on GitHub Pages and set the matching auth redirect URLs and `APP_ORIGIN`.
+Install the Supabase CLI, run `supabase login`, link the project with `supabase link --project-ref <project-ref>`, apply migrations with `supabase db push`, then deploy the function with `supabase functions deploy study-ai`. Set production secrets in the Supabase Dashboard or with `supabase secrets set`. The production site URL is `https://tridentxnova.github.io/Chillcampus.ai/`; use its origin `https://tridentxnova.github.io` for `APP_ORIGIN`. The GitHub Pages repository path is required in Supabase Auth redirects. If using the Supabase GitHub integration, set its working directory to `.` because `supabase/` is at the repository root.
 
 For local testing, copy `supabase/.env.example` to `supabase/.env`, add the AI key, add `supabase/.env` to `.gitignore` (already included), run a local static server at the configured origin, then use `supabase functions serve study-ai --env-file supabase/.env`. Never add real secrets to Git.
 
@@ -28,7 +28,7 @@ The AI function accepts only chat, quiz, flashcard, and plan tasks; requires a v
 
 ## Owner setup still required
 
-The project owner must create the Supabase project, configure email authentication and redirect URLs, provide the OpenAI API key in Supabase Edge Function secrets, and publish/deploy the backend. The repository does not contain credentials and cannot activate a hosted service until those account-side steps are completed.
+The project owner must configure email authentication and redirect URLs, add the OpenAI API key and production `APP_ORIGIN` in Supabase Edge Function secrets, and deploy the migration/function. The repository does not contain private credentials. The repository does not contain credentials and cannot activate a hosted service until those account-side steps are completed.
 
 ## Reliability and launch checks
 
