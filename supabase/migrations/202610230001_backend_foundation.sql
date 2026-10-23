@@ -8,6 +8,8 @@ create table if not exists public.learner_state (
 );
 
 alter table public.learner_state enable row level security;
+grant select, insert, update on public.learner_state to authenticated;
+revoke all on public.learner_state from anon;
 
 create policy "Learners can read their own state"
   on public.learner_state for select to authenticated
@@ -77,6 +79,7 @@ begin
     return false;
   end if;
   v_window := to_timestamp(floor(extract(epoch from clock_timestamp()) / p_window_seconds) * p_window_seconds);
+  delete from public.ai_request_windows where window_started_at < clock_timestamp() - interval '7 days';
   insert into public.ai_request_windows(user_id, window_started_at, request_count)
   values (p_user_id, v_window, 1)
   on conflict (user_id, window_started_at)
