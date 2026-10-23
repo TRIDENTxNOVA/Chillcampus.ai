@@ -1,0 +1,4 @@
+project_id = "chill-campus"
+
+[functions.study-ai]
+verify_jwt = true
