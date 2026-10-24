@@ -6,7 +6,7 @@ The website remains a static GitHub Pages frontend. Supabase provides hosted aut
 
 1. Create a Supabase project and copy its project URL and **publishable** key.
 2. In Authentication → URL Configuration, set Site URL to `https://tridentxnova.github.io/Chillcampus.ai/` and add `https://tridentxnova.github.io/Chillcampus.ai/**` to Redirect URLs. Add your exact local dev URL separately if needed.
-3. Apply all SQL migrations in `supabase/migrations/` in filename order. This includes the backend foundation and the revision-safe learner sync migration.
+3. Apply all SQL migrations in `supabase/migrations/` in filename order. This includes `supabase/migrations/202610230001_backend_foundation.sql` and `supabase/migrations/202610250001_revision_safe_learner_state.sql`.
 4. Deploy the `study-ai` Edge Function. The function requires JWT authentication.
 5. In Edge Function Secrets, set `OPENAI_API_KEY`, `AI_MODEL=gpt-4o-mini`, and `APP_ORIGIN=https://tridentxnova.github.io`. `APP_ORIGIN` is the origin only (no `/Chillcampus.ai/` path). Never put the OpenAI key in GitHub Pages or frontend files.
 
