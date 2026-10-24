@@ -176,3 +176,6 @@ body[data-appearance="focus"] .week-dots{margin-top:auto;padding-top:20px}
     transition-duration: 0.01ms !important;
   }
 }
+
+
+#sync-status[data-retry="true"]{cursor:pointer;text-decoration:underline;text-underline-offset:3px}#sync-status[data-retry="true"]:focus-visible{outline:2px solid var(--leaf);outline-offset:3px;border-radius:3px}
