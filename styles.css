@@ -164,3 +164,15 @@ body[data-appearance="focus"] .week-dots{margin-top:auto;padding-top:20px}
 .auth-message{color:#465141}
 .logged-out-card #auth-mode-toggle{color:#4f7043}
 @media(max-width:480px){.logged-out-screen{padding:14px}.logged-out-card{padding:24px 20px;max-height:calc(100vh - 28px);overflow-y:auto}.logged-out-card h1{font-size:clamp(22px,7vw,25px)}.logged-out-card #auth-submit{width:100%}.logged-out-card #auth-reset{justify-self:start}}
+
+
+/* Respect system motion preferences while keeping every interaction usable. */
+@media (prefers-reduced-motion: reduce) {
+  html:focus-within { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
