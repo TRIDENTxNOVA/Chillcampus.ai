@@ -8,11 +8,11 @@ The website remains a static GitHub Pages frontend. Supabase provides hosted aut
 2. In Authentication → URL Configuration, set Site URL to `https://tridentxnova.github.io/Chillcampus.ai/` and add `https://tridentxnova.github.io/Chillcampus.ai/**` to Redirect URLs. Add your exact local dev URL separately if needed.
 3. Apply all SQL migrations in `supabase/migrations/` in filename order. This includes `supabase/migrations/202610230001_backend_foundation.sql` and `supabase/migrations/202610250001_revision_safe_learner_state.sql`.
 4. Deploy the `study-ai` Edge Function. The function requires JWT authentication.
-5. In Edge Function Secrets, set `OPENAI_API_KEY`, `AI_MODEL=gpt-4o-mini`, and `APP_ORIGIN=https://tridentxnova.github.io`. `APP_ORIGIN` is the origin only (no `/Chillcampus.ai/` path). Never put the OpenAI key in GitHub Pages or frontend files.
+5. In Edge Function Secrets, set `GEMINI_API_KEY`, `GEMINI_MODEL=gemini-3.5-flash-lite`, and `APP_ORIGIN=https://tridentxnova.github.io`. `APP_ORIGIN` is the origin only (no `/Chillcampus.ai/` path). Never put the Gemini API key in GitHub Pages or frontend files.
 
 ## 2. Connect the static website
 
-Edit `backend-config.js` and fill in only `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY`. Those client values are designed to be public; database and storage RLS policies are the access control. The AI key and Supabase service-role key must never be placed there.
+Edit `backend-config.js` and fill in only `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY`. Those client values are designed to be public; database and storage RLS policies are the access control. The Gemini API key and Supabase service-role key must never be placed there.
 
 ## 3. Run and deploy
 
@@ -22,17 +22,17 @@ For local testing, copy `supabase/.env.example` to `supabase/.env`, add the AI k
 
 ## Data and privacy model
 
-The app stores one JSON study-state document per authenticated learner. RLS permits each signed-in user to access only their own row. The revision-safe sync migration adds a revision counter and an authenticated `save_learner_state` function: writes succeed only when the saved revision still matches, so concurrent updates are detected, merged in the browser where possible, and retried. Until that migration is applied, the app keeps using the legacy sync path; cloud sync still works, but simultaneous edits can overwrite one another. The upload bucket is private, has a 10 MiB file limit and an allowlist of PDF, text, PNG, and JPEG, and scopes object paths to the authenticated user's ID. Files are not sent to the AI function. Chat history is held only in page memory for follow-up questions and sent with the current request; the app does not persist conversations. AI questions are processed by OpenAI, so review its current API data handling and include that processing in your privacy notice before launch.
+The app stores one JSON study-state document per authenticated learner. RLS permits each signed-in user to access only their own row. The revision-safe sync migration adds a revision counter and an authenticated `save_learner_state` function: writes succeed only when the saved revision still matches, so concurrent updates are detected, merged in the browser where possible, and retried. Until that migration is applied, the app keeps using the legacy sync path; cloud sync still works, but simultaneous edits can overwrite one another. The upload bucket is private, has a 10 MiB file limit and an allowlist of PDF, text, PNG, and JPEG, and scopes object paths to the authenticated user's ID. Files are not sent to the AI function. Chat history is held only in page memory for follow-up questions and sent with the current request; the app does not persist conversations. AI questions are processed by Google's Gemini API. On the unpaid tier, Google may use prompts and responses to improve its products and may have human reviewers process them. Do not send sensitive personal information; review Google's current API terms and disclose this processing in your privacy notice before launch.
 
 The AI function accepts only chat, quiz, flashcard, and plan tasks; requires a valid user session; enforces 12 requests per minute and 120 requests per day per account; limits the request to 12 KiB; bounds context/history/tokens; and returns generic service errors without upstream details. Update `APP_ORIGIN` to the exact production origin before deployment.
 
 ## Owner setup still required
 
-The project owner must configure email authentication and redirect URLs, add the OpenAI API key and production `APP_ORIGIN` in Supabase Edge Function secrets, and deploy the migration/function. The repository does not contain private credentials. The repository does not contain credentials and cannot activate a hosted service until those account-side steps are completed.
+The project owner must configure email authentication and redirect URLs, add the Google Gemini API key and production `APP_ORIGIN` in Supabase Edge Function secrets, and deploy the migration/function. The repository does not contain private credentials. The repository does not contain credentials and cannot activate a hosted service until those account-side steps are completed.
 
 ## Reliability and launch checks
 
-Before inviting learners, set a monthly spending limit and alert in the OpenAI project; per-account request limits do not cap total project spend. Configure Supabase backups/exports for the selected plan and test restoring one. Review function and database logs without recording prompts or secrets.
+Before inviting learners, monitor Gemini API usage and quotas in Google AI Studio; per-account request limits do not cap total provider usage. If you enable billing, configure spend controls where available. Configure Supabase backups/exports for the selected plan and test restoring one. Review function and database logs without recording prompts or secrets.
 
 After applying all migrations, the revision check prevents silent last-write-wins updates. The browser merges additive learner state and retries a conflict up to three times. If conflicts continue, the app preserves local changes and shows a sync retry state. Verify the migration is active before asking learners to edit the same account from multiple devices.
 
