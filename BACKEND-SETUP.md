@@ -8,7 +8,7 @@ The website remains a static GitHub Pages frontend. Supabase provides hosted aut
 2. In Authentication → URL Configuration, set Site URL to `https://tridentxnova.github.io/Chillcampus.ai/` and add `https://tridentxnova.github.io/Chillcampus.ai/**` to Redirect URLs. Add your exact local dev URL separately if needed.
 3. Apply all SQL migrations in `supabase/migrations/` in filename order. This includes `supabase/migrations/202610230001_backend_foundation.sql` and `supabase/migrations/202610250001_revision_safe_learner_state.sql`.
 4. Deploy the `study-ai` Edge Function. The function requires JWT authentication.
-5. In Edge Function Secrets, set `GEMINI_API_KEY`, `GEMINI_MODEL=gemini-3.5-flash-lite`, and `APP_ORIGIN=https://tridentxnova.github.io`. `APP_ORIGIN` is the origin only (no `/Chillcampus.ai/` path). Never put the Gemini API key in GitHub Pages or frontend files.
+5. Create a Gemini API key in Google AI Studio. In Supabase Edge Function Secrets, set `GEMINI_API_KEY`, `GEMINI_MODEL=gemini-3.5-flash-lite`, and `APP_ORIGIN=https://tridentxnova.github.io`. `APP_ORIGIN` is the origin only (no `/Chillcampus.ai/` path). Never put the Gemini API key in GitHub Pages or frontend files. After the updated function is deployed and confirmed working, remove old unused OpenAI and `GPT` secrets.
 
 ## 2. Connect the static website
 
