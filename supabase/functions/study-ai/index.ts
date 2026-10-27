@@ -99,7 +99,7 @@ Deno.serve(async (request) => {
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
   const anonKey = supabaseKeyFromEnv("SUPABASE_ANON_KEY", "SUPABASE_PUBLISHABLE_KEYS");
   const serviceKey = supabaseKeyFromEnv("SUPABASE_SERVICE_ROLE_KEY", "SUPABASE_SECRET_KEYS");
-  const aiKey = Deno.env.get("OPENAI_API_KEY");
+  const aiKey = Deno.env.get("GEMINI_API_KEY");
   if (!supabaseUrl || !anonKey || !serviceKey || !aiKey) return json(503, { error: "service_unavailable" }, origin);
 
   const userClient = createClient(supabaseUrl, anonKey, {
@@ -153,28 +153,34 @@ Deno.serve(async (request) => {
     "Relevant learner context (JSON): " + contextText,
   ].join("\n");
 
-  const model = Deno.env.get("AI_MODEL") || "gpt-4o-mini";
+  const model = Deno.env.get("GEMINI_MODEL") || "gemini-3.5-flash-lite";
   try {
-    const upstream = await fetch("https://api.openai.com/v1/responses", {
+    const upstream = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, {
       method: "POST",
-      headers: { authorization: "Bearer " + aiKey, "content-type": "application/json" },
+      headers: { "x-goog-api-key": aiKey, "content-type": "application/json" },
       signal: AbortSignal.timeout(25_000),
       body: JSON.stringify({
-        model,
-        store: false,
-        max_output_tokens: type === "chat" ? 700 : 1_500,
-        input: [
-          { role: "system", content: system },
-          ...history,
-          { role: "user", content: message },
+        systemInstruction: { parts: [{ text: system }] },
+        contents: [
+          ...history.map((entry) => ({
+            role: entry.role === "assistant" ? "model" : "user",
+            parts: [{ text: entry.content }],
+          })),
+          { role: "user", parts: [{ text: message }] },
         ],
-        text: type === "chat" ? { format: { type: "text" } } : { format: { type: "json_object" } },
+        generationConfig: {
+          maxOutputTokens: type === "chat" ? 700 : 1_500,
+          ...(type === "chat" ? {} : { responseMimeType: "application/json" }),
+        },
       }),
     });
     if (upstream.status === 429) return json(503, { error: "temporarily_unavailable" }, origin);
     if (!upstream.ok) return json(503, { error: "temporarily_unavailable" }, origin);
     const result = await upstream.json();
-    const answer = result?.output_text ?? result?.output?.flatMap((item: { content?: Array<{ type?: string; text?: string }> }) => item.content ?? []).find((part: { type?: string }) => part.type === 'output_text')?.text;
+    const answer = result?.candidates?.[0]?.content?.parts
+      ?.filter((part: { text?: string }) => typeof part.text === "string")
+      .map((part: { text: string }) => part.text)
+      .join("");
     if (typeof answer !== "string" || !answer.trim()) return json(503, { error: "temporarily_unavailable" }, origin);
     return json(200, { answer: answer.trim(), type }, origin);
   } catch {
